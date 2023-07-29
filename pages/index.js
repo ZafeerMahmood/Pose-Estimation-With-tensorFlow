@@ -49,9 +49,6 @@ export default function Home() {
   };
   const processFrame = async (net, frame) => {
     const pose = await net.estimateSinglePose(frame);
-    console.log(pose);
-  
-
     const leftShoulder = pose.keypoints.find((kp) => kp.part === 'leftShoulder');
     const rightShoulder = pose.keypoints.find((kp) => kp.part === 'rightShoulder');
   
@@ -75,7 +72,7 @@ export default function Home() {
     if (angleDegrees < 0) {
       angleDegrees = 360 + angleDegrees;
     }
-  
+    console.log(pose);
     console.log('Shoulder Midpoint:', shoulderMidpoint);
     console.log('Hip Midpoint:', hipMidpoint);
     console.log('Angle between midpoints:', angleDegrees);
