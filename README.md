@@ -38,9 +38,6 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 ```
 
-
-
-
 # to run 
 ```
 npm install
@@ -49,4 +46,12 @@ npm run dev
 ```
 
 connect to a server route for video fecting.
+
+
+# todos / remaining 
+
+1. add strava auth workflow
+2. add mongodb to store angles
+3. add a background voice when angles or not correct or a tost notification ??
+
  
