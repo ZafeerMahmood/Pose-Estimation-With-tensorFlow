@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useReducer } from "react";
 
 const defaultState = {
   token: "",
@@ -7,6 +7,10 @@ const defaultState = {
 };
 
 const getDefaultState = () => {
+  if (typeof window === "undefined") {
+    return defaultState; // Return defaultState on the server-side
+  }
+
   const token = sessionStorage.getItem("token");
   const refreshToken = sessionStorage.getItem("refreshToken");
   const user = sessionStorage.getItem("user");
@@ -54,7 +58,27 @@ const stravaReducer = (state, action) => {
 };
 
 const StravaContextProvider = ({ children }) => {
-  const [state, dispatch] = React.useReducer(stravaReducer, getDefaultState());
+  const [state, dispatch] = useReducer(stravaReducer, getDefaultState());
+
+  useEffect(() => {
+    // This effect runs only on the client-side
+    // and ensures that `sessionStorage` is available
+    if (typeof window !== "undefined") {
+      const token = sessionStorage.getItem("token");
+      const refreshToken = sessionStorage.getItem("refreshToken");
+      const user = sessionStorage.getItem("user");
+      if (!!token && !!refreshToken && !!user) {
+        dispatch({
+          type: "update_user_auth",
+          payload: {
+            token,
+            refreshToken,
+            user: JSON.parse(user)
+          }
+        });
+      }
+    }
+  }, []);
 
   return (
     <StravaStateContext.Provider value={state}>
@@ -65,8 +89,4 @@ const StravaContextProvider = ({ children }) => {
   );
 };
 
-export {
-  StravaContextProvider,
-  StravaStateContext,
-  StravaDispatchContext
-};
+export { StravaContextProvider, StravaStateContext, StravaDispatchContext };
