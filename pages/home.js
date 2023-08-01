@@ -14,7 +14,8 @@ import Sidebar from '../components/sidebar';
 import React, { useRef, useEffect } from 'react';
 import * as posenet from '@tensorflow-models/posenet';
 import * as tf from '@tensorflow/tfjs';
-import { drawKeypoints, drawSkeleton } from '../utils/utilities'; 
+import { drawKeypoints, drawSkeleton } from '../utils/utilities';
+import { ToastContainer, toast } from "react-toastify";
 tf.setBackend('webgl'); // for better performance on desktop
 
 export default function Home() {
@@ -69,13 +70,16 @@ export default function Home() {
     const angleRadians = Math.atan2(hipMidpoint.y - shoulderMidpoint.y, hipMidpoint.x - shoulderMidpoint.x);
     let angleDegrees = (angleRadians * 180) / Math.PI;
   
-    if (angleDegrees < 0) {
-      angleDegrees = 360 + angleDegrees;
-    }
-    console.log(pose);
-    console.log('Shoulder Midpoint:', shoulderMidpoint);
-    console.log('Hip Midpoint:', hipMidpoint);
+    // if (angleDegrees < 0) {
+    //   angleDegrees = 360 + angleDegrees;
+    // }
+    // console.log(pose);
+    // console.log('Shoulder Midpoint:', shoulderMidpoint);
+    // console.log('Hip Midpoint:', hipMidpoint);
     console.log('Angle between midpoints:', angleDegrees);
+    // if(angleDegrees<45){
+    //   console.log("Your posture is good!");
+    // }
   };
   const captureFrame = async (video) => {
     const canvas = document.createElement('canvas');
@@ -144,6 +148,7 @@ export default function Home() {
           </button>
         </div>
       </div>
+      <ToastContainer/>
     </div>
   );
 }
