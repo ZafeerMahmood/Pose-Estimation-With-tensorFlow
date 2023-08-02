@@ -14,6 +14,7 @@ const StravaUser = () => {
       <div className="mt-10 text-xl">
         <div className="name text-sm mt-2">
           {fullname}
+          
         </div>
       </div>
     </div>

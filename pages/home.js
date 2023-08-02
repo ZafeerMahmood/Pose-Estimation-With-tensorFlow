@@ -80,6 +80,8 @@ export default function Home() {
     // if(angleDegrees<45){
     //   console.log("Your posture is good!");
     // }
+
+    // store all angles in a obj
   };
   const captureFrame = async (video) => {
     const canvas = document.createElement('canvas');
@@ -104,12 +106,13 @@ export default function Home() {
   };
 
   const stopStreaming = () => {
+    // on stop send the angles data to the flask server with access token and
     if (!videoRef.current.paused && !videoRef.current.ended) {
       videoRef.current.pause();
     }
     cancelAnimationFrame(animationFrameId);
   };
-
+// remove use effect
   useEffect(() => {
     const cleanup = () => {
       stopStreaming();
