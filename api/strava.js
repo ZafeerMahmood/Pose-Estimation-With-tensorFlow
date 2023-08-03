@@ -63,3 +63,19 @@ export const getUserActivities = async (username) => {
     console.error(`Unable to fetch user activities. ${error}`);
   }
 };
+
+
+export const getActivityById = async (activityId) => {
+  try {
+    const response = await fetch(`${PORT}/activity/${activityId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Unable to fetch activity. ${error}`);
+  }
+};
