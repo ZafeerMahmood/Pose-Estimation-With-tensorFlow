@@ -1,18 +1,20 @@
 import React from 'react'
 import Sidebar from '../components/sidebar'
 import List from '../components/list'
-import { fetchUserStravaActivities } from '../api/strava'
+import { getUserActivities } from '../api/strava'
 import { StravaStateContext } from "../context/StravaContext";
 
 function Activities() {
 
     const [activities, setActivities] = React.useState([]);
     const stravaState = React.useContext(StravaStateContext);
+    const user = stravaState?.user;
+    const fullname = `${user?.firstname} ${user?.lastname}`;
 
     React.useEffect(() => {
         let isMounted = true;
         const fetchActivities = async () => {
-            const response = await fetchUserStravaActivities(stravaState?.token);
+            const response = await getUserActivities(fullname);
             if (isMounted && response) {
                 setActivities(response);
             }

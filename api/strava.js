@@ -1,4 +1,4 @@
-import { STRAVA_TOKEN_URI } from "../contants";
+import { STRAVA_TOKEN_URI,PORT } from "../contants";
 
 export const fetchAuthorizedStravaUser = async (code) => {
   try {
@@ -26,7 +26,7 @@ export const fetchUserStravaActivities = async (token) => {
 
 export const combineData = async (token, start_time, end_time, Object, email) => {
   try {
-    const response = await fetch("/combine_data", {
+    const response = await fetch(`${PORT}/combine_data`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,3 +45,21 @@ export const combineData = async (token, start_time, end_time, Object, email) =>
     console.error(`Unable to combine data. ${error}`);
   }
 }
+
+export const getUserActivities = async (username) => {
+  try {
+    const response = await fetch(`${PORT}/get_user_activites`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+      }),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Unable to fetch user activities. ${error}`);
+  }
+};

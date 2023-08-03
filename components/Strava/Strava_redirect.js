@@ -11,6 +11,7 @@ const StravaRedirect = () => {
   const stravaState = useContext(StravaStateContext);
 
   useEffect(() => {
+
     const addUserToStorage = (payload) => {
         if (payload?.token) {
           sessionStorage.setItem("token", payload.token);
@@ -22,18 +23,19 @@ const StravaRedirect = () => {
           sessionStorage.setItem("user", JSON.stringify(payload.user));
         }
       };
+    
     const fetchAuthedUser = async (code) => {
       try {
         const response = await fetchAuthorizedStravaUser(code);
         if (response) {
-          // Save user data to session storage
+
           addUserToStorage({
             token: response.access_token,
             refreshToken: response.refresh_token,
             user: response.athlete,
           });
 
-          // Dispatch the action to update the state
+  
           dispatch({
             type: "update_user_auth",
             payload: {

@@ -1,32 +1,35 @@
-// 1.install @tensoflow/tfjs and @tensorflow-models/posenet
-// 2.set up a canvas
-// 3.import * as tf from '@tensorflow/tfjs';
-// 3.import * as posenet from '@tensorflow-models/posenet';
-// 4.import { drawKeypoints, drawSkeleton } from './utils';
-// 5.detect pose fucntion
-// 6.draw pose function
-// 7.connect to flask server
-// 8.connect to a stream 
-// 9.draw pose on the stream
-// 10.calculate the angle
+
 
 import Sidebar from '../components/sidebar';
-import { useRef, useState } from 'react';
+import { useRef, useState ,useContext} from 'react';
 import * as posenet from '@tensorflow-models/posenet';
 import * as tf from '@tensorflow/tfjs';
-import { ToastContainer } from "react-toastify";
+import { combineData } from '../api/strava';
+import { StravaStateContext } from "../context/StravaContext";
+
+
 tf.setBackend('webgl'); 
 
 export default function Home() {
+
+  const stravaState = useContext(StravaStateContext);
+  const user = stravaState?.user;
+  const fullname = `${user?.firstname} ${user?.lastname}`;
+  const token = stravaState?.token;
+
   const videoRef = useRef(null);
   const [angles, setAngles] = useState([]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const isStreaming=useRef(false);
+
 
   let animationFrameId = null;
 
   const runPosenet = async (net) => {
-    animationFrameId = requestAnimationFrame(() => detect(net));
+    if (isStreaming.current){
+      animationFrameId = requestAnimationFrame(() => detect(net))
+    }
   };
 
   const detect = async (net) => {
@@ -79,12 +82,11 @@ export default function Home() {
     // console.log(pose);
     // console.log('Shoulder Midpoint:', shoulderMidpoint);
     // console.log('Hip Midpoint:', hipMidpoint);
-    console.log('Angle between midpoints:', angleDegrees);
     // if(angleDegrees<45){
     //   console.log("Your posture is good!");
     // }
+    console.log(angleDegrees);
     setAngles(prevAngles => [...prevAngles, angleDegrees]);
-    // store all angles in a obj
   };
   const captureFrame = async (video) => {
     const canvas = document.createElement('canvas');
@@ -96,28 +98,42 @@ export default function Home() {
   };
 
   const startStreaming = async () => {
+    isStreaming.current=true;
     setStartTime(Date.now());
     const videoUrl = '/api/video'
     videoRef.current.src = videoUrl;
     await videoRef.current.play();
-
     const net = await posenet.load({
       inputResolution: { width: 640, height: 480 },
       scale: 0.5,
     });
-
     runPosenet(net);
   };
 
-  const stopStreaming = () => {
-    setEndTime(Date.now());
-    // on stop send the angles data to the flask server with access token and
+  const stopStreaming = async () => {
+    isStreaming.current=false;
     if (!videoRef.current.paused && !videoRef.current.ended) {
       videoRef.current.pause();
+      videoRef.current.src = '';
     }
     cancelAnimationFrame(animationFrameId);
+
+    const start = formatTimestampToString(startTime);
+    const end = formatTimestampToString(endTime);
+    const anglesData={
+      data:angles,
+      length:angles.length,
+      type:"angles",
+    }
+    console.log(anglesData);
+    await combineData(token,start,end,anglesData,fullname);
+    setAngles([]);
   };
 
+  const formatTimestampToString = (timestamp) => {
+    const dateObj = new Date(timestamp);
+    return dateObj.toISOString().slice(0, 19).replace('T', ' ');
+  };
 
   return (
     <div>
@@ -147,7 +163,6 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <ToastContainer/>
     </div>
   );
 }
