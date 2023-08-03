@@ -25,7 +25,6 @@ const Strava = () => {
     if (stravaState?.token) {
       fetchActivities();
     }
-
     // useEffect cleanup
     return () => {
       isMounted = false;

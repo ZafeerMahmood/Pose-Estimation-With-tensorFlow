@@ -11,7 +11,7 @@
 // 10.calculate the angle
 
 import Sidebar from '../components/sidebar';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import * as posenet from '@tensorflow-models/posenet';
 import * as tf from '@tensorflow/tfjs';
 import { drawKeypoints, drawSkeleton } from '../utils/utilities';
@@ -20,6 +20,9 @@ tf.setBackend('webgl'); // for better performance on desktop
 
 export default function Home() {
   const videoRef = useRef(null);
+  const [angles, setAngles] = useState([]);
+  const [startTime, setStartTime] = useState(null);
+
   let animationFrameId = null;
 
   const runPosenet = async (net) => {
@@ -80,7 +83,7 @@ export default function Home() {
     // if(angleDegrees<45){
     //   console.log("Your posture is good!");
     // }
-
+    setAngles(prevAngles => [...prevAngles, angleDegrees]);
     // store all angles in a obj
   };
   const captureFrame = async (video) => {
@@ -93,6 +96,7 @@ export default function Home() {
   };
 
   const startStreaming = async () => {
+    setStartTime(Date.now());
     const videoUrl = '/api/video'
     videoRef.current.src = videoUrl;
     await videoRef.current.play();
@@ -112,16 +116,7 @@ export default function Home() {
     }
     cancelAnimationFrame(animationFrameId);
   };
-// remove use effect
-  useEffect(() => {
-    const cleanup = () => {
-      stopStreaming();
-    };
-    return () => {
-      cleanup();
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
+
 
   return (
     <div>
