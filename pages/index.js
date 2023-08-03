@@ -10,7 +10,7 @@ const App = () => {
   const stravaState = React.useContext(StravaStateContext);
   return (
     <>
-      {!stravaState?.token ? <StravaAuthorize /> : Router.push('/home')}
+      {!stravaState?.token ? <div className='h-screen w-screen flex justify-center items-center' ><StravaAuthorize /></div> : Router.push('/home')}
     </>
   )
 }
