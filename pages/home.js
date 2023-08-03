@@ -14,14 +14,14 @@ import Sidebar from '../components/sidebar';
 import { useRef, useState } from 'react';
 import * as posenet from '@tensorflow-models/posenet';
 import * as tf from '@tensorflow/tfjs';
-import { drawKeypoints, drawSkeleton } from '../utils/utilities';
-import { ToastContainer, toast } from "react-toastify";
-tf.setBackend('webgl'); // for better performance on desktop
+import { ToastContainer } from "react-toastify";
+tf.setBackend('webgl'); 
 
 export default function Home() {
   const videoRef = useRef(null);
   const [angles, setAngles] = useState([]);
   const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
 
   let animationFrameId = null;
 
@@ -110,6 +110,7 @@ export default function Home() {
   };
 
   const stopStreaming = () => {
+    setEndTime(Date.now());
     // on stop send the angles data to the flask server with access token and
     if (!videoRef.current.paused && !videoRef.current.ended) {
       videoRef.current.pause();

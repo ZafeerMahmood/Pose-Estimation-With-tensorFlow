@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
+import { StravaStateContext } from "../context/StravaContext";
 
 function Sidebar() {
+
+    const stravaState = React.useContext(StravaStateContext);
+    const user = stravaState?.user;
+    const fullname = `${user?.firstname} ${user?.lastname}`;
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
     function openSidebar() {
         setSidebarOpen((prev) => !(prev));
-
     }
 
     return (
@@ -20,6 +25,12 @@ function Sidebar() {
                 <aside id="" className="fixed top-0 right-0 z-40 w-64 h-screen " aria-label="Sidebar">
                     <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                         <ul className="space-y-2 font-medium">
+                            <li>
+                                <a  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                                    <img src={user?.profile} alt='user profile pic' className='rounded-full h-6 w-6'></img>
+                                    <span className="ml-3 ">{fullname}</span>
+                                </a>
+                            </li>
                             <li>
                                 <a href="/home" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                     <svg className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
