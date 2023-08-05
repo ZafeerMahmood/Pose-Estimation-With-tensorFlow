@@ -122,7 +122,7 @@ export default function Home() {
     const end = formatTimestampToString(endTime);
     const anglesData={
       data:angles,
-      length:angles.length,
+      original_size:angles.length,
       type:"angles",
     }
     console.log(anglesData);

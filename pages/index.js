@@ -8,13 +8,11 @@ const App = () => {
   const stravaState = useContext(StravaStateContext);
 
   useEffect(() => {
-    // Redirect to /home after 2 seconds if the token exists
     if (stravaState?.token) {
       const timeoutId = setTimeout(() => {
         Router.push('/home');
       }, 2000);
 
-      // Clear the timeout when the component is unmounted
       return () => clearTimeout(timeoutId);
     }
   }, [stravaState?.token, Router]);
