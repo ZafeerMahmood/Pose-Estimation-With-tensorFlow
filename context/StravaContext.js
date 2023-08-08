@@ -10,7 +10,6 @@ const getDefaultState = () => {
   if (typeof window === "undefined") {
     return defaultState; // Return defaultState on the server-side
   }
-
   const token = sessionStorage.getItem("token");
   const refreshToken = sessionStorage.getItem("refreshToken");
   const user = sessionStorage.getItem("user");

@@ -1,7 +1,5 @@
-
-
 import Sidebar from '../components/sidebar';
-import { useRef, useState ,useContext} from 'react';
+import { useRef, useState ,useContext ,useEffect} from 'react';
 import * as posenet from '@tensorflow-models/posenet';
 import * as tf from '@tensorflow/tfjs';
 import { combineData } from '../api/strava';
@@ -22,7 +20,8 @@ export default function Home() {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const isStreaming=useRef(false);
-
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+  const [sound,setSound]=useState(false);
 
   let animationFrameId = null;
 
@@ -30,6 +29,15 @@ export default function Home() {
     if (isStreaming.current){
       animationFrameId = requestAnimationFrame(() => detect(net))
     }
+  };
+
+  const playBackgroundSound = () => {
+    const sound = new Audio('position.wav');
+    sound.play();
+    setIsSoundPlaying(true);
+    sound.addEventListener('ended', () => {
+      setIsSoundPlaying(false);
+    });
   };
 
   const detect = async (net) => {
@@ -75,18 +83,13 @@ export default function Home() {
   
     const angleRadians = Math.atan2(hipMidpoint.y - shoulderMidpoint.y, hipMidpoint.x - shoulderMidpoint.x);
     let angleDegrees = (angleRadians * 180) / Math.PI;
-  
-    // if (angleDegrees < 0) {
-    //   angleDegrees = 360 + angleDegrees;
-    // }
-    // console.log(pose);
-    // console.log('Shoulder Midpoint:', shoulderMidpoint);
-    // console.log('Hip Midpoint:', hipMidpoint);
-    // if(angleDegrees<45){
-    //   console.log("Your posture is good!");
-    // }
     console.log(angleDegrees);
     setAngles(prevAngles => [...prevAngles, angleDegrees]);
+
+    if (angleDegrees < 45 && !sound) {
+      setSound(true);
+    }
+
   };
   const captureFrame = async (video) => {
     const canvas = document.createElement('canvas');
@@ -134,6 +137,33 @@ export default function Home() {
     const dateObj = new Date(timestamp);
     return dateObj.toISOString().slice(0, 19).replace('T', ' ');
   };
+
+  useEffect(() => {
+    let timeoutId;
+
+    const playBackgroundSound = () => {
+      const sound = new Audio('position.wav');
+      sound.play();
+      setSound(true);
+
+      // When the sound finishes playing, reset the state after a delay
+      sound.addEventListener('ended', () => {
+        timeoutId = setTimeout(() => {
+          setSound(false);
+        }, 2000);
+      });
+    };
+
+    if (sound) {
+      playBackgroundSound();
+    }
+
+    // Clear the timeout when the component unmounts
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [sound]);
+
 
   return (
     <div>
